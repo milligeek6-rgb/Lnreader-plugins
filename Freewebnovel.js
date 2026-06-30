@@ -2,14 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fetch_1 = require("@libs/fetch");
 const cheerio = require("cheerio");
-const plugin = {
-    id: "freewebnovel",
-    name: "Free Web Novel (Fixed)",
-    icon: "assets/icon.png",
-    site: "https://freewebnovel.com",
-    version: "2.0.1",
+
+class FreeWebNovelPlugin {
+    constructor() {
+        this.id = "freewebnovel";
+        this.name = "Free Web Novel (Fixed)";
+        this.icon = "assets/icon.png";
+        this.site = "https://freewebnovel.com";
+        this.version = "3.0.1";
+    }
+
     async popularNovels(pageNo) {
-        const html = await (0, fetch_1.fetchHtml)(`${this.site}/most-popular-novel?page=${pageNo}`);
+        const url = `${this.site}/most-popular-novel?page=${pageNo}`;
+        const html = await (0, fetch_1.fetchHtml)({ url });
         const $ = cheerio.load(html);
         const novels = [];
         $(".li-row").each((i, el) => {
@@ -20,7 +25,8 @@ const plugin = {
             });
         });
         return novels;
-    },
+    }
+
     async parseNovel(novelPath) {
         const chapters = [];
         let pageNo = 1;
@@ -33,11 +39,14 @@ const plugin = {
         let status = "";
         let genres = "";
         const basePath = novelPath.replace(".html", "");
+
         while (hasNextPage) {
-            const url = pageNo === 1 ? `${this.site}${novelPath}` : `${this.site}${basePath}/page-${pageNo}.html`;
+            const url = pageNo === 1 
+                ? `${this.site}${novelPath}` 
+                : `${this.site}${basePath}/page-${pageNo}.html`;
             let html;
             try {
-                html = await (0, fetch_1.fetchHtml)(url);
+                html = await (0, fetch_1.fetchHtml)({ url });
             } catch (error) {
                 break;
             }
@@ -87,16 +96,20 @@ const plugin = {
             genres: genres,
             chapters: chapters,
         };
-    },
+    }
+
     async parseChapter(chapterPath) {
-        const html = await (0, fetch_1.fetchHtml)(`${this.site}${chapterPath}`);
+        const url = `${this.site}${chapterPath}`;
+        const html = await (0, fetch_1.fetchHtml)({ url });
         const $ = cheerio.load(html);
         $(".txtnav, .adsbygoogle, script, style").remove();
         const chapterText = $("#chr-content").html() || "";
         return chapterText;
-    },
+    }
+
     async searchNovels(searchTerm, pageNo) {
-        const html = await (0, fetch_1.fetchHtml)(`${this.site}/search.html?searchkey=${encodeURIComponent(searchTerm)}`);
+        const url = `${this.site}/search.html?searchkey=${encodeURIComponent(searchTerm)}`;
+        const html = await (0, fetch_1.fetchHtml)({ url });
         const $ = cheerio.load(html);
         const novels = [];
         $(".li-row").each((i, el) => {
@@ -107,6 +120,7 @@ const plugin = {
             });
         });
         return novels;
-    },
-};
-exports.default = plugin;
+    }
+}
+
+exports.default = new FreeWebNovelPlugin();
