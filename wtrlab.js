@@ -7,24 +7,29 @@ class WTRLabPlugin {
         this.name = "WTR-LAB (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://wtr-lab.com";
-        this.version = "3.0.5";
-        this.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        this.version = "3.0.6";
+    }
+
+    get headers() {
+        return {
+            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
             "Accept-Language": "en-US,en;q=0.5",
-            "Referer": "https://wtr-lab.com/"
+            "Referer": "https://wtr-lab.com/",
+            "Origin": "https://wtr-lab.com"
         };
     }
 
     async popularNovels(pageNo) {
         const url = `${this.site}/en/novel-list?page=${pageNo}`;
-        const html = await fetchHtml({ url, init: { headers: this.headers } });
+        const res = await fetch(url, { headers: this.headers });
+        const html = await res.text();
         const $ = cheerio.load(html);
         const novels = [];
 
         $(".novel-item, .serie-card, .li-row").each((i, el) => {
             const linkAnchor = $(el).find("a").first();
-            const name = $(el).find(".title, .novel-title, h5").text().trim();
+            const name = $(el).find(".title, .novel-title, h5, .serie-title").text().trim();
             if (name) {
                 novels.push({
                     name: name,
@@ -38,22 +43,23 @@ class WTRLabPlugin {
 
     async parseNovel(novelPath) {
         const url = `${this.site}${novelPath}`;
-        const html = await fetchHtml({ url, init: { headers: this.headers } });
+        const res = await fetch(url, { headers: this.headers });
+        const html = await res.text();
         const $ = cheerio.load(html);
 
         const novelName = $(".novel-title, .serie-title, h1").text().trim();
         const novelCover = $(".novel-cover img, .serie-cover img").attr("src") || "";
-        const novelSummary = $(".summary-text, .description, .synopsis").text().trim();
+        const novelSummary = $(".summary-text, .description, .synopsis, #description").text().trim();
         
         let author = "";
-        $(".author, .metadata-item").each((i, el) => {
+        $(".author, .metadata-item, .serie-info").each((i, el) => {
             if ($(el).text().includes("Author:")) {
                 author = $(el).text().replace("Author:", "").trim();
             }
         });
 
         const chapters = [];
-        $(".chapter-list a, .chapters-list a, .list-chapters a, .ch-link").each((i, el) => {
+        $(".chapter-list a, .chapters-list a, .list-chapters a, .ch-link, .chapter-item a").each((i, el) => {
             const chapUrl = $(el).attr("href");
             if (chapUrl) {
                 chapters.push({
@@ -78,13 +84,12 @@ class WTRLabPlugin {
 
     async parseChapter(chapterPath) {
         const url = `${this.site}${chapterPath}`;
-        const html = await fetchHtml({ url, init: { headers: this.headers } });
+        const res = await fetch(url, { headers: this.headers });
+        const html = await res.text();
         const $ = cheerio.load(html);
 
-        // Strip noisy scripts and layouts
         $(".adsbygoogle, script, style, .header, .footer, .nav-links").remove();
 
-        // Fallback structural safety net
         const selectors = [
             ".chapter-content", 
             ".reader-content", 
@@ -92,7 +97,8 @@ class WTRLabPlugin {
             ".entry-content",
             ".read-container",
             ".serie-body",
-            ".wtr-content"
+            ".wtr-content",
+            "article"
         ];
 
         let chapterText = "";
@@ -106,7 +112,8 @@ class WTRLabPlugin {
 
     async searchNovels(searchTerm, pageNo) {
         const url = `${this.site}/en/search?searchkey=${encodeURIComponent(searchTerm)}&page=${pageNo}`;
-        const html = await fetchHtml({ url, init: { headers: this.headers } });
+        const res = await fetch(url, { headers: this.headers });
+        const html = await res.text();
         const $ = cheerio.load(html);
         const novels = [];
 
