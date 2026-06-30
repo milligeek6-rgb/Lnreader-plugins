@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const fetch_1 = require("@libs/fetch");
+const fetchHtml = require("@libs/fetch").fetchHtml;
 const cheerio = require("cheerio");
 
 class FreeWebNovelPlugin {
@@ -9,12 +7,12 @@ class FreeWebNovelPlugin {
         this.name = "Free Web Novel (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://freewebnovel.com";
-        this.version = "3.0.1";
+        this.version = "3.0.2";
     }
 
     async popularNovels(pageNo) {
         const url = `${this.site}/most-popular-novel?page=${pageNo}`;
-        const html = await (0, fetch_1.fetchHtml)({ url });
+        const html = await fetchHtml({ url });
         const $ = cheerio.load(html);
         const novels = [];
         $(".li-row").each((i, el) => {
@@ -46,7 +44,7 @@ class FreeWebNovelPlugin {
                 : `${this.site}${basePath}/page-${pageNo}.html`;
             let html;
             try {
-                html = await (0, fetch_1.fetchHtml)({ url });
+                html = await fetchHtml({ url });
             } catch (error) {
                 break;
             }
@@ -100,7 +98,7 @@ class FreeWebNovelPlugin {
 
     async parseChapter(chapterPath) {
         const url = `${this.site}${chapterPath}`;
-        const html = await (0, fetch_1.fetchHtml)({ url });
+        const html = await fetchHtml({ url });
         const $ = cheerio.load(html);
         $(".txtnav, .adsbygoogle, script, style").remove();
         const chapterText = $("#chr-content").html() || "";
@@ -109,7 +107,7 @@ class FreeWebNovelPlugin {
 
     async searchNovels(searchTerm, pageNo) {
         const url = `${this.site}/search.html?searchkey=${encodeURIComponent(searchTerm)}`;
-        const html = await (0, fetch_1.fetchHtml)({ url });
+        const html = await fetchHtml({ url });
         const $ = cheerio.load(html);
         const novels = [];
         $(".li-row").each((i, el) => {
@@ -123,4 +121,4 @@ class FreeWebNovelPlugin {
     }
 }
 
-exports.default = new FreeWebNovelPlugin();
+module.exports = new FreeWebNovelPlugin();
