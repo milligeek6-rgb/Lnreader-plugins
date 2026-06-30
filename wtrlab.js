@@ -7,7 +7,7 @@ class WTRLabPlugin {
         this.name = "WTR-LAB (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://wtr-lab.com";
-        this.version = "3.0.6";
+        this.version = "3.1.0";
     }
 
     get headers() {
