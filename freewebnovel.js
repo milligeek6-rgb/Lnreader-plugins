@@ -5,11 +5,11 @@ const cheerio = require("cheerio");
 
 class FreeWebNovelPlugin {
     constructor() {
-        this.id = "freewebnovel";
+        this.id = "freewebnovel_fixed_v3";
         this.name = "Free Web Novel (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://freewebnovel.com";
-        this.version = "3.1.5";
+        this.version = "4.0.0";
     }
 
     async popularNovels(pageNo) {
