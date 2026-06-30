@@ -7,7 +7,7 @@ class FreeWebNovelPlugin {
         this.name = "Free Web Novel (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://freewebnovel.com";
-        this.version = "3.0.2";
+        this.version = "3.1.0";
     }
 
     async popularNovels(pageNo) {
