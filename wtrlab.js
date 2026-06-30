@@ -5,11 +5,11 @@ const cheerio = require("cheerio");
 
 class WTRLabPlugin {
     constructor() {
-        this.id = "wtrlab";
+        this.id = "wtrlab_fixed_v3";
         this.name = "WTR-LAB (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://wtr-lab.com";
-        this.version = "3.1.5";
+        this.version = "4.0.0";
     }
 
     get headers() {
