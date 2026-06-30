@@ -7,7 +7,7 @@ const plugin = {
     name: "Free Web Novel (Fixed)",
     icon: "assets/icon.png",
     site: "https://freewebnovel.com",
-    version: "2.0.0",
+    version: "2.0.1",
     async popularNovels(pageNo) {
         const html = await (0, fetch_1.fetchHtml)(`${this.site}/most-popular-novel?page=${pageNo}`);
         const $ = cheerio.load(html);
@@ -34,14 +34,11 @@ const plugin = {
         let genres = "";
         const basePath = novelPath.replace(".html", "");
         while (hasNextPage) {
-            const url = pageNo === 1
-                ? `${this.site}${novelPath}`
-                : `${this.site}${basePath}/page-${pageNo}.html`;
+            const url = pageNo === 1 ? `${this.site}${novelPath}` : `${this.site}${basePath}/page-${pageNo}.html`;
             let html;
             try {
                 html = await (0, fetch_1.fetchHtml)(url);
-            }
-                catch (error) {
+            } catch (error) {
                 break;
             }
             const $ = cheerio.load(html);
@@ -72,12 +69,10 @@ const plugin = {
                 const nextButton = $(".page a:contains('Next'), .pagination .next");
                 if (nextButton.length > 0) {
                     pageNo++;
-                }
-                else {
+                } else {
                     hasNextPage = false;
                 }
-            }
-            else {
+            } else {
                 hasNextPage = false;
             }
         }
