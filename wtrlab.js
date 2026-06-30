@@ -1,4 +1,6 @@
-const fetchHtml = require("@libs/fetch").fetchHtml;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const fetch_1 = require("@libs/fetch");
 const cheerio = require("cheerio");
 
 class WTRLabPlugin {
@@ -7,7 +9,7 @@ class WTRLabPlugin {
         this.name = "WTR-LAB (Fixed)";
         this.icon = "assets/icon.png";
         this.site = "https://wtr-lab.com";
-        this.version = "3.1.0";
+        this.version = "3.1.5";
     }
 
     get headers() {
@@ -22,8 +24,7 @@ class WTRLabPlugin {
 
     async popularNovels(pageNo) {
         const url = `${this.site}/en/novel-list?page=${pageNo}`;
-        const res = await fetch(url, { headers: this.headers });
-        const html = await res.text();
+        const html = await (0, fetch_1.fetchHtml)({ url, init: { headers: this.headers } });
         const $ = cheerio.load(html);
         const novels = [];
 
@@ -43,8 +44,7 @@ class WTRLabPlugin {
 
     async parseNovel(novelPath) {
         const url = `${this.site}${novelPath}`;
-        const res = await fetch(url, { headers: this.headers });
-        const html = await res.text();
+        const html = await (0, fetch_1.fetchHtml)({ url, init: { headers: this.headers } });
         const $ = cheerio.load(html);
 
         const novelName = $(".novel-title, .serie-title, h1").text().trim();
@@ -84,8 +84,7 @@ class WTRLabPlugin {
 
     async parseChapter(chapterPath) {
         const url = `${this.site}${chapterPath}`;
-        const res = await fetch(url, { headers: this.headers });
-        const html = await res.text();
+        const html = await (0, fetch_1.fetchHtml)({ url, init: { headers: this.headers } });
         const $ = cheerio.load(html);
 
         $(".adsbygoogle, script, style, .header, .footer, .nav-links").remove();
@@ -112,8 +111,7 @@ class WTRLabPlugin {
 
     async searchNovels(searchTerm, pageNo) {
         const url = `${this.site}/en/search?searchkey=${encodeURIComponent(searchTerm)}&page=${pageNo}`;
-        const res = await fetch(url, { headers: this.headers });
-        const html = await res.text();
+        const html = await (0, fetch_1.fetchHtml)({ url, init: { headers: this.headers } });
         const $ = cheerio.load(html);
         const novels = [];
 
@@ -131,4 +129,4 @@ class WTRLabPlugin {
     }
 }
 
-module.exports = new WTRLabPlugin();
+exports.default = new WTRLabPlugin();
